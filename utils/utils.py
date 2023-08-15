@@ -27,3 +27,8 @@ def xyz2irc(coord_xyz: XyzTuple,
     cri_a = ((coord_a - origin_a) @ np.linalg.inv(direction_a)) / vxSize_a
     cri_a = np.round(cri_a)
     return IrcTuple(int(cri_a[2]), int(cri_a[1]), int(cri_a[0]))
+
+
+def enumerateWithEstimate():
+    pass
+
