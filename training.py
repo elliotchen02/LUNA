@@ -36,17 +36,6 @@ class LunaTrainingApp:
             type=int,
         )
 
-        # parser.add_argument('--tb-prefix',
-        #     default='p2ch11',
-        #     help="Data prefix to use for Tensorboard run. Defaults to chapter.",
-        # )
-
-        # parser.add_argument('comment',
-        #     help="Comment suffix for Tensorboard run.",
-        #     nargs='?',
-        #     default='dwlpt',
-        # )
-
         self.cli_args = parser.parse_args(sys_argv)
         self.time_str = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
 
@@ -60,7 +49,7 @@ class LunaTrainingApp:
         self.model = self.initModel()
 
 
-        
+
 
 
 
