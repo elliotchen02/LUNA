@@ -9,12 +9,17 @@ import csv
 import copy
 import glob
 import os
+import random
 
 from collections import namedtuple
 
 from utils.utils import xyz2irc, XyzTuple, IrcTuple
 from utils.disk import getCache
+from utils.logconfig import logging
 
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
 
 # Disk cache path
 raw_cache = getCache('diskCache')
@@ -94,7 +99,7 @@ def getCtRawCandidate(series_uid: 'seriesID', center_xyz: XyzTuple, width_irc: I
 class Ct:
     def __init__(self, series_uid: 'seriesID') -> None:
         mhd_path = glob.glob(
-            'data-unversioned/part2/luna/subset*/{}.mhd'.format(series_uid)
+            'data-unversioned/part2/luna/subset*/{}.mhd'.format(series_uid)     #TODO
         )[0]
 
         ct_mhd = sitk.ReadImage(mhd_path)
@@ -146,7 +151,8 @@ class LunaDataset(Dataset):
     def __init__(self, 
                 val_stride: int = 0, 
                 isValSet_bool: bool = False, 
-                series_uid: 'SeriesID' = None) -> None:
+                series_uid: 'SeriesID' = None,
+                sortby_str: str =' None') -> None:
         # Splits data into validation and training selecting validation points based on stride
         # Taking copy of return value so that list in memory cache is not impacted by changes in this function
         self.candidateInfo_list = copy.copy(getCandidateInfoSet())
@@ -166,6 +172,22 @@ class LunaDataset(Dataset):
         elif val_stride > 0:
             del self.candidateInfo_list[::val_stride]
             assert self.candidateInfo_list
+
+        
+        if sortby_str == 'random':
+            random.shuffle(self.candidateInfo_list)
+        elif sortby_str == 'series_uid':
+            self.candidateInfo_list.sort(key=lambda x: (x.series_uid, x.center_xyz))
+        elif sortby_str == 'label_and_size':
+            pass
+        else:
+            raise Exception("Unknown sort: " + repr(sortby_str))
+
+        log.info("{!r}: {} {} samples".format(
+            self,
+            len(self.candidateInfo_list),
+            "validation" if isValSet_bool else "training",
+        ))
 
     def __len__(self) -> int:
         return len(self.candidateInfo_list)
