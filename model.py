@@ -2,6 +2,11 @@ import torch
 import torch.nn as nn
 
 import math
+from utils.logconfig import logging
+
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 
 class LunaBlock(nn.Module):
